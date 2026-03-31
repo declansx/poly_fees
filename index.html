@@ -1,0 +1,1010 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sport Prediction Market Odds</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --sx: #818cf8;
+  --sx-dim: rgba(129,140,248,0.1);
+  --sx-border: rgba(129,140,248,0.28);
+  --poly: #fb923c;
+  --poly-dim: rgba(251,146,60,0.1);
+  --poly-border: rgba(251,146,60,0.28);
+  --win: #34d399;
+  --win-dim: rgba(52,211,153,0.1);
+  --win-glow: rgba(52,211,153,0.2);
+  --lose: #f87171;
+  --lose-dim: rgba(248,113,113,0.08);
+  --bg: #070b12;
+  --bg2: #0c1422;
+  --card: #0e1628;
+  --border: rgba(255,255,255,0.055);
+  --border-hi: rgba(255,255,255,0.11);
+  --text: #dde4f0;
+  --text-dim: #5a6a88;
+  --text-mid: #8899bb;
+  --radius: 13px;
+}
+
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+/* ── Sticky Header ─────────────────────────── */
+.sticky-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(7,11,18,0.88);
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  border-bottom: 1px solid var(--border-hi);
+}
+.header-inner {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+.header-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 0 10px;
+  flex-wrap: wrap;
+}
+.brand { display: flex; align-items: center; gap: 11px; }
+.brand-diamond {
+  width: 26px; height: 26px;
+  background: linear-gradient(135deg, var(--sx) 0%, var(--poly) 100%);
+  clip-path: polygon(50% 0%,100% 50%,50% 100%,0% 50%);
+  flex-shrink: 0;
+}
+.brand-name {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 17px;
+  letter-spacing: 0.4px;
+  background: linear-gradient(90deg, var(--sx) 0%, #c4b5fd 45%, var(--poly) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.brand-sub {
+  font-size: 10px;
+  color: var(--text-dim);
+  font-weight: 500;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  margin-top: 1px;
+}
+.header-right { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.last-updated {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  color: var(--text-dim);
+}
+.refresh-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  color: var(--text-mid);
+  border: 1px solid var(--border-hi);
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  letter-spacing: 0.2px;
+  transition: all 0.18s;
+}
+.refresh-btn:hover { border-color: var(--sx); color: var(--sx); }
+.refresh-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+.controls-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-bottom: 10px;
+  flex-wrap: wrap;
+}
+.bet-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--bg2);
+  border: 1px solid var(--border-hi);
+  border-radius: 9px;
+  padding: 6px 11px;
+}
+.bet-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  white-space: nowrap;
+}
+.bet-input {
+  background: transparent;
+  border: none;
+  color: var(--text);
+  font-family: 'DM Mono', monospace;
+  font-size: 14px;
+  font-weight: 500;
+  width: 82px;
+  outline: none;
+  caret-color: var(--sx);
+}
+.bet-input::-webkit-inner-spin-button,
+.bet-input::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+
+.seg-control {
+  display: flex;
+  background: var(--bg2);
+  border: 1px solid var(--border-hi);
+  border-radius: 9px;
+  padding: 3px;
+  gap: 2px;
+}
+.seg-btn {
+  background: transparent;
+  color: var(--text-dim);
+  border: 1px solid transparent;
+  padding: 4px 11px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+.seg-btn:hover { color: var(--text); }
+.seg-btn.active { background: var(--sx-dim); color: var(--sx); border-color: var(--sx-border); }
+
+.search-wrap { position: relative; flex: 1; min-width: 140px; max-width: 210px; }
+.search-icon {
+  position: absolute;
+  left: 9px; top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-dim);
+  pointer-events: none;
+}
+.search-input {
+  width: 100%;
+  background: var(--bg2);
+  border: 1px solid var(--border-hi);
+  color: var(--text);
+  padding: 6px 11px 6px 29px;
+  border-radius: 9px;
+  font-size: 12px;
+  font-family: 'DM Sans', sans-serif;
+  outline: none;
+  transition: border-color 0.18s;
+}
+.search-input:focus { border-color: var(--sx); }
+.search-input::placeholder { color: var(--text-dim); }
+
+.sort-select {
+  background: var(--bg2);
+  border: 1px solid var(--border-hi);
+  color: var(--text-mid);
+  padding: 6px 30px 6px 11px;
+  border-radius: 9px;
+  font-size: 12px;
+  font-family: 'DM Sans', sans-serif;
+  cursor: pointer;
+  outline: none;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%235a6a88' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 9px center;
+  transition: border-color 0.18s;
+}
+.sort-select:focus { border-color: var(--sx); }
+
+.col-labels {
+  display: grid;
+  grid-template-columns: minmax(130px,1.4fr) 1fr 1fr minmax(140px,auto);
+  gap: 8px;
+  padding: 7px 4px 7px 0;
+  border-top: 1px solid var(--border);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1.1px;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+.col-label-sx   { color: var(--sx);   opacity: 0.65; }
+.col-label-poly { color: var(--poly); opacity: 0.65; }
+.col-label-best { color: var(--win);  opacity: 0.65; text-align: right; padding-right: 4px; }
+
+@media (max-width: 680px) { .col-labels { display: none; } }
+
+/* ── Main ───────────────────────────────────── */
+.main-content {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 20px 20px 64px;
+}
+.stats-bar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  min-height: 0;
+}
+.stat-chip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  padding: 5px 10px;
+  font-size: 11px;
+  color: var(--text-dim);
+  font-weight: 500;
+  animation: fadeUp 0.4s both;
+}
+.stat-chip strong {
+  font-family: 'DM Mono', monospace;
+  color: var(--text);
+  font-weight: 500;
+}
+.stat-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+
+/* ── Game Card ──────────────────────────────── */
+.game-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin-bottom: 10px;
+  overflow: hidden;
+  transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+  animation: cardReveal 0.5s cubic-bezier(0.16,1,0.3,1) both;
+}
+.game-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--border-hi);
+  box-shadow: 0 10px 40px rgba(0,0,0,0.45), 0 0 0 1px rgba(129,140,248,0.08);
+}
+@keyframes cardReveal {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 13px 18px 11px;
+  border-bottom: 1px solid var(--border);
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.matchup-title {
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 15px;
+  color: #fff;
+  letter-spacing: -0.1px;
+}
+.matchup-vs { opacity: 0.35; font-weight: 600; }
+.game-time-badge {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  color: var(--text-dim);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+/* Outcome Row */
+.outcome-row {
+  display: grid;
+  grid-template-columns: minmax(130px,1.4fr) 1fr 1fr minmax(140px,auto);
+  gap: 8px;
+  align-items: center;
+  padding: 11px 14px 11px 18px;
+  transition: background 0.15s;
+}
+.outcome-row:not(:last-child) { border-bottom: 1px solid var(--border); }
+.outcome-row:hover { background: rgba(255,255,255,0.018); }
+
+.outcome-label { display: flex; flex-direction: column; gap: 1px; }
+.outcome-name {
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--text);
+  letter-spacing: -0.1px;
+}
+
+.platform-bar-group { display: flex; flex-direction: column; gap: 3px; }
+.platform-tag {
+  display: inline-flex;
+  align-items: center;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  padding: 1px 5px;
+  border-radius: 3px;
+  width: fit-content;
+  margin-bottom: 1px;
+}
+.sx-tag   { background: var(--sx-dim);   color: var(--sx);   border: 1px solid var(--sx-border); }
+.poly-tag { background: var(--poly-dim); color: var(--poly); border: 1px solid var(--poly-border); }
+
+.odds-value {
+  font-family: 'DM Mono', monospace;
+  font-size: 18px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.sx-odds   { color: var(--sx); }
+.poly-odds { color: var(--poly); }
+.odds-na   { color: var(--text-dim); }
+.no-poly-note {
+  font-size: 11px;
+  color: var(--text-dim);
+  padding-top: 14px;
+  font-style: italic;
+}
+
+/* Best Payout */
+.best-payout-col {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 3px;
+}
+.payout-pill {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 5px 11px;
+  border-radius: 9px;
+  text-align: center;
+  min-width: 96px;
+  transition: box-shadow 0.2s;
+}
+.payout-pill.positive {
+  background: var(--win-dim);
+  border: 1px solid rgba(52,211,153,0.28);
+  box-shadow: 0 0 16px var(--win-glow);
+}
+.payout-pill.negative {
+  background: var(--lose-dim);
+  border: 1px solid rgba(248,113,113,0.18);
+}
+.payout-pill.neutral {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--border);
+}
+.payout-pill.na {
+  background: transparent;
+  border: 1px solid var(--border);
+}
+.payout-diff-val {
+  font-family: 'DM Mono', monospace;
+  font-size: 14px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  line-height: 1;
+}
+.payout-pill.positive .payout-diff-val { color: var(--win); }
+.payout-pill.negative .payout-diff-val { color: var(--lose); }
+.payout-pill.neutral  .payout-diff-val { color: var(--text-dim); }
+.payout-pill.na       .payout-diff-val { color: var(--text-dim); }
+
+.payout-platform-name {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  margin-top: 2px;
+  white-space: nowrap;
+}
+.payout-pill.positive .payout-platform-name { color: rgba(52,211,153,0.6); }
+.payout-pill.negative .payout-platform-name { color: rgba(248,113,113,0.6); }
+.payout-pill.neutral  .payout-platform-name { color: var(--text-dim); }
+.payout-pill.na       .payout-platform-name { color: var(--text-dim); }
+
+.payout-amounts {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  color: var(--text-dim);
+  text-align: right;
+}
+
+/* ── Loading / Error / Empty ────────────────── */
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 100px 20px;
+  gap: 14px;
+}
+.loader { display: flex; gap: 6px; }
+.loader-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  animation: loaderPulse 1.2s ease-in-out infinite;
+}
+.loader-dot:nth-child(1) { background: var(--sx);   animation-delay: 0s; }
+.loader-dot:nth-child(2) { background: #a5b4fc;      animation-delay: 0.2s; }
+.loader-dot:nth-child(3) { background: var(--poly);  animation-delay: 0.4s; }
+@keyframes loaderPulse {
+  0%,80%,100% { transform: scale(0.7); opacity: 0.35; }
+  40%          { transform: scale(1.2); opacity: 1; }
+}
+.loading-text { font-size: 14px; color: var(--text-mid); font-weight: 500; }
+.loading-sub  { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text-dim); }
+
+.error-card {
+  background: rgba(248,113,113,0.05);
+  border: 1px solid rgba(248,113,113,0.18);
+  border-radius: var(--radius);
+  padding: 14px 18px;
+  margin-bottom: 10px;
+  font-size: 12px;
+  color: #fca5a5;
+  display: flex;
+  gap: 8px;
+}
+
+.empty-state { text-align: center; padding: 80px 20px; animation: fadeUp 0.4s both; }
+.empty-icon  { font-size: 36px; margin-bottom: 12px; opacity: 0.4; }
+.empty-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 20px; font-weight: 700;
+  color: var(--text); margin-bottom: 8px;
+}
+.empty-desc { font-size: 13px; color: var(--text-dim); max-width: 340px; margin: 0 auto; }
+
+/* ── Animations ─────────────────────────────── */
+@keyframes spin   { to { transform: rotate(360deg); } }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+/* ── Responsive ─────────────────────────────── */
+@media (max-width: 680px) {
+  .outcome-row {
+    grid-template-columns: 1fr;
+    gap: 10px;
+    padding: 13px 14px;
+  }
+  .best-payout-col { align-items: flex-start; }
+  .payout-pill { flex-direction: row; gap: 8px; align-items: center; min-width: 0; }
+  .payout-platform-name { margin-top: 0; }
+}
+@media (max-width: 480px) {
+  .sticky-header .header-inner { padding: 0 14px; }
+  .main-content { padding: 14px 12px 48px; }
+  .brand-name { font-size: 14px; }
+  .matchup-title { font-size: 13px; }
+  .controls-row { gap: 8px; }
+  .search-wrap { max-width: 100%; }
+}
+</style>
+</head>
+<body>
+
+<header class="sticky-header">
+  <div class="header-inner">
+    <div class="header-top">
+      <div class="brand">
+        <div class="brand-diamond"></div>
+        <div>
+          <div class="brand-name">SPORT PREDICTION MARKET ODDS</div>
+        </div>
+      </div>
+      <div class="header-right">
+        <span class="last-updated" id="lastUpdated"></span>
+        <button class="refresh-btn" id="refreshBtn" onclick="loadData()">
+          <svg id="refreshIcon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+          Refresh
+        </button>
+      </div>
+    </div>
+
+    <div class="controls-row">
+      <select class="sort-select" id="leagueSelect" onchange="setLeague(this.value)">
+        <option value="nba">NBA</option>
+        <option value="mlb">MLB</option>
+      </select>
+      <div class="bet-group">
+        <span class="bet-label">Bet $</span>
+        <input type="number" class="bet-input" id="betAmount" value="1000" min="1" step="100" oninput="recalculate()">
+      </div>
+      <div class="seg-control">
+        <button class="seg-btn active" id="fmt-american" onclick="setOddsFormat('american')">American</button>
+        <button class="seg-btn" id="fmt-decimal"  onclick="setOddsFormat('decimal')">Decimal</button>
+        <button class="seg-btn" id="fmt-implied"  onclick="setOddsFormat('implied')">Implied</button>
+      </div>
+      <div class="search-wrap">
+        <svg class="search-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" class="search-input" id="searchInput" placeholder="Search teams…" oninput="onSearch()">
+      </div>
+      <select class="sort-select" id="sortSelect" onchange="onSort()">
+        <option value="start-time">Sort: Start Time</option>
+        <option value="best-payout">Sort: Best Edge</option>
+        <option value="alpha">Sort: A → Z</option>
+      </select>
+    </div>
+
+    <div class="col-labels">
+      <div>Outcome</div>
+      <div class="col-label-sx">SX Bet</div>
+      <div class="col-label-poly">Polymarket</div>
+      <div class="col-label-best">Best Payout</div>
+    </div>
+  </div>
+</header>
+
+<div class="main-content">
+  <div class="stats-bar" id="statsBar"></div>
+  <div id="content">
+    <div class="loading-state">
+      <div class="loader">
+        <div class="loader-dot"></div>
+        <div class="loader-dot"></div>
+        <div class="loader-dot"></div>
+      </div>
+      <div class="loading-text">Loading NBA markets…</div>
+      <div class="loading-sub">Fetching from SX Bet &amp; Polymarket</div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── League Config ─────────────────────────────────────────────────────────
+const LEAGUES = {
+  nba: { label: 'NBA', sxLeagueId: 1,   polyTagSlug: 'nba' },
+  mlb: { label: 'MLB', sxLeagueId: 171, polyTagSlug: 'mlb' },
+};
+let currentLeague = 'nba';
+function setLeague(key) { currentLeague = key; loadData(); }
+
+// ── NBA Team Normalization ─────────────────────────────────────────────────
+const NBA_TEAM_ALIASES = {
+  'atlanta hawks':'hawks','hawks':'hawks','atl':'hawks',
+  'boston celtics':'celtics','celtics':'celtics','bos':'celtics',
+  'brooklyn nets':'nets','nets':'nets','bkn':'nets','bk nets':'nets',
+  'charlotte hornets':'hornets','hornets':'hornets','cha':'hornets',
+  'chicago bulls':'bulls','bulls':'bulls','chi':'bulls',
+  'cleveland cavaliers':'cavaliers','cavaliers':'cavaliers','cavs':'cavaliers','cle':'cavaliers',
+  'detroit pistons':'pistons','pistons':'pistons','det':'pistons',
+  'indiana pacers':'pacers','pacers':'pacers','ind':'pacers',
+  'miami heat':'heat','heat':'heat','mia':'heat',
+  'milwaukee bucks':'bucks','bucks':'bucks','mil':'bucks',
+  'new york knicks':'knicks','knicks':'knicks','ny knicks':'knicks','nyk':'knicks',
+  'orlando magic':'magic','magic':'magic','orl':'magic',
+  'philadelphia 76ers':'76ers','76ers':'76ers','sixers':'76ers','phi':'76ers','philly 76ers':'76ers',
+  'toronto raptors':'raptors','raptors':'raptors','tor':'raptors',
+  'washington wizards':'wizards','wizards':'wizards','was':'wizards','wsh':'wizards',
+  'dallas mavericks':'mavericks','mavericks':'mavericks','mavs':'mavericks','dal':'mavericks',
+  'denver nuggets':'nuggets','nuggets':'nuggets','den':'nuggets',
+  'golden state warriors':'warriors','warriors':'warriors','gs warriors':'warriors','gsw':'warriors',
+  'houston rockets':'rockets','rockets':'rockets','hou':'rockets',
+  'la clippers':'clippers','l.a. clippers':'clippers','los angeles clippers':'clippers','clippers':'clippers','lac':'clippers',
+  'la lakers':'lakers','l.a. lakers':'lakers','los angeles lakers':'lakers','lakers':'lakers','lal':'lakers',
+  'memphis grizzlies':'grizzlies','grizzlies':'grizzlies','mem':'grizzlies',
+  'minnesota timberwolves':'timberwolves','timberwolves':'timberwolves','wolves':'timberwolves','min':'timberwolves',
+  'new orleans pelicans':'pelicans','pelicans':'pelicans','nop':'pelicans','no pelicans':'pelicans',
+  'oklahoma city thunder':'thunder','thunder':'thunder','okc':'thunder',
+  'phoenix suns':'suns','suns':'suns','phx':'suns',
+  'portland trail blazers':'blazers','trail blazers':'blazers','blazers':'blazers','por':'blazers',
+  'sacramento kings':'kings','kings':'kings','sac':'kings',
+  'san antonio spurs':'spurs','spurs':'spurs','sa spurs':'spurs','sas':'spurs',
+  'utah jazz':'jazz','jazz':'jazz','uta':'jazz',
+};
+
+// ── MLB Team Normalization ─────────────────────────────────────────────────
+const MLB_TEAM_ALIASES = {
+  'baltimore orioles':'orioles','orioles':'orioles','bal':'orioles',
+  'boston red sox':'red sox','red sox':'red sox','bos':'red sox',
+  'new york yankees':'yankees','ny yankees':'yankees','yankees':'yankees','nyy':'yankees',
+  'tampa bay rays':'rays','rays':'rays','tb rays':'rays','tbr':'rays',
+  'toronto blue jays':'blue jays','blue jays':'blue jays','tor':'blue jays','jays':'blue jays',
+  'chicago white sox':'white sox','white sox':'white sox','chw':'white sox','cws':'white sox',
+  'cleveland guardians':'guardians','guardians':'guardians','cle':'guardians',
+  'detroit tigers':'tigers','tigers':'tigers','det':'tigers',
+  'kansas city royals':'royals','royals':'royals','kc royals':'royals','kcr':'royals',
+  'minnesota twins':'twins','twins':'twins','min':'twins',
+  'houston astros':'astros','astros':'astros','hou':'astros',
+  'los angeles angels':'angels','la angels':'angels','angels':'angels','laa':'angels',
+  'athletics':'athletics','oakland athletics':'athletics','las vegas athletics':'athletics',"a's":'athletics','oak':'athletics',
+  'seattle mariners':'mariners','mariners':'mariners','sea':'mariners',
+  'texas rangers':'rangers','tex rangers':'rangers','tex':'rangers',
+  'atlanta braves':'braves','braves':'braves','atl':'braves',
+  'miami marlins':'marlins','marlins':'marlins','mia':'marlins',
+  'new york mets':'mets','ny mets':'mets','mets':'mets','nym':'mets',
+  'philadelphia phillies':'phillies','phillies':'phillies','phi':'phillies',
+  'washington nationals':'nationals','nationals':'nationals','nats':'nationals','wsh':'nationals',
+  'chicago cubs':'cubs','cubs':'cubs','chc':'cubs',
+  'cincinnati reds':'reds','reds':'reds','cin':'reds',
+  'milwaukee brewers':'brewers','brewers':'brewers','mil':'brewers',
+  'pittsburgh pirates':'pirates','pirates':'pirates','pit':'pirates',
+  'st. louis cardinals':'cardinals','st louis cardinals':'cardinals','cardinals':'cardinals','stl':'cardinals',
+  'arizona diamondbacks':'diamondbacks','diamondbacks':'diamondbacks','d-backs':'diamondbacks','dbacks':'diamondbacks','ari':'diamondbacks',
+  'colorado rockies':'rockies','rockies':'rockies','col':'rockies',
+  'los angeles dodgers':'dodgers','la dodgers':'dodgers','dodgers':'dodgers','lad':'dodgers',
+  'san diego padres':'padres','padres':'padres','sd padres':'padres','sdp':'padres',
+  'san francisco giants':'sfgiants','sf giants':'sfgiants','giants':'sfgiants','sfg':'sfgiants',
+};
+
+function normalizeTeam(name, league) {
+  const aliases = league === 'mlb' ? MLB_TEAM_ALIASES : NBA_TEAM_ALIASES;
+  const lower = name.trim().toLowerCase();
+  if (aliases[lower]) return aliases[lower];
+  for (const [alias, canonical] of Object.entries(aliases)) {
+    if (lower.includes(alias) || alias.includes(lower)) return canonical;
+  }
+  return lower;
+}
+
+function makeMatchKey(a, b) { return [a, b].sort().join('|'); }
+
+// ── API ────────────────────────────────────────────────────────────────────
+const SX_BASE   = 'https://api.sx.bet';
+const POLY_BASE = 'https://gamma-api.polymarket.com';
+const CLOB_BASE = 'https://clob.polymarket.com';
+const SX_USDC   = '0x6629Ce1Cf35Cc1329ebB4F63202F3f197b3F050B';
+const SX_MONEYLINE_TYPE = 226;
+
+async function fetchWithProxy(url) {
+  const resp = await fetch('/proxy?url=' + encodeURIComponent(url));
+  if (!resp.ok) { const b = await resp.text().catch(()=>''); throw new Error(`HTTP ${resp.status}: ${b}`); }
+  return resp.json();
+}
+
+async function fetchSXMarkets(leagueId) {
+  const data = await fetchWithProxy(`${SX_BASE}/markets/active?leagueId=${leagueId}&type=${SX_MONEYLINE_TYPE}&pageSize=50`);
+  if (data.status !== 'success') throw new Error('SX Bet API error');
+  return data.data.markets;
+}
+
+async function fetchSXOdds(hashes) {
+  if (!hashes.length) return {};
+  const data = await fetchWithProxy(`${SX_BASE}/orders/odds/best?marketHashes=${hashes.join(',')}&baseToken=${SX_USDC}`);
+  if (data.status !== 'success') throw new Error('SX Bet odds API error');
+  const map = {};
+  for (const o of data.data.bestOdds) {
+    const m1 = parseFloat(o.outcomeOne?.percentageOdds || '0') / 1e20;
+    const m2 = parseFloat(o.outcomeTwo?.percentageOdds || '0') / 1e20;
+    map[o.marketHash] = { outcomeOne: m2 > 0 ? 1 - m2 : null, outcomeTwo: m1 > 0 ? 1 - m1 : null };
+  }
+  return map;
+}
+
+async function fetchPolyMarkets(tagSlug) {
+  const events = await fetchWithProxy(`${POLY_BASE}/events?tag_slug=${tagSlug}&closed=false&ascending=true&order=startDate&limit=50`);
+  if (!Array.isArray(events)) return [];
+  const pending = [];
+  for (const ev of events) {
+    const title = ev.title || '';
+    const markets = ev.markets || [];
+    const ml = markets.find(m => {
+      const q = (m.question||'').replace(/\?$/,'').trim();
+      return q === title.trim();
+    });
+    if (!ml) continue;
+    const vs = title.match(/^(.+?)\s+vs\.?\s+(.+)$/i);
+    if (!vs) continue;
+    let tids = ml.clobTokenIds;
+    if (typeof tids === 'string') { try { tids = JSON.parse(tids); } catch { tids = []; } }
+    if (!Array.isArray(tids) || tids.length < 2) continue;
+    pending.push({ teamOne: vs[1].trim(), teamTwo: vs[2].trim(), tokenIdOne: tids[0], tokenIdTwo: tids[1], startDate: ev.startDate });
+  }
+  if (!pending.length) return [];
+  const allIds = pending.flatMap(r => [r.tokenIdOne, r.tokenIdTwo]);
+  const prices = await Promise.all(allIds.map(id =>
+    fetchWithProxy(`${CLOB_BASE}/price?token_id=${encodeURIComponent(id)}&side=SELL`)
+      .then(d => ({ id, price: parseFloat(d.price) }))
+      .catch(() => ({ id, price: null }))
+  ));
+  const pm = {};
+  for (const r of prices) { if (r.price !== null && !isNaN(r.price)) pm[r.id] = r.price; }
+  return pending
+    .map(r => ({ teamOne: r.teamOne, teamTwo: r.teamTwo, priceOne: pm[r.tokenIdOne]??null, priceTwo: pm[r.tokenIdTwo]??null }))
+    .filter(r => r.priceOne !== null && r.priceTwo !== null);
+}
+
+// ── Math ───────────────────────────────────────────────────────────────────
+function sxPayout(p, bet) { if (p<=0||p>=1) return null; return bet / p; }
+function polyPayout(ask, bet) {
+  if (ask<=0||ask>=1) return null;
+  return (bet / ask) * (1 - 0.03 * (1 - ask));
+}
+function impliedToAmerican(p) {
+  if (p >= 0.5) return Math.round(-(p/(1-p))*100);
+  return '+' + Math.round(((1-p)/p)*100);
+}
+function impliedToDecimal(p) { return (1/p).toFixed(2); }
+
+// ── State ──────────────────────────────────────────────────────────────────
+let oddsFormat = 'american';
+let searchQuery = '';
+let sortMode = 'start-time';
+let cachedMatches = [];
+
+function setOddsFormat(fmt) {
+  oddsFormat = fmt;
+  document.querySelectorAll('.seg-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('fmt-' + fmt).classList.add('active');
+  recalculate();
+}
+function formatOdds(p) {
+  if (oddsFormat === 'decimal') return impliedToDecimal(p) + '×';
+  if (oddsFormat === 'implied') return (p*100).toFixed(1) + '%';
+  return impliedToAmerican(p);
+}
+function formatPayout(v) {
+  if (v == null) return '—';
+  return '$' + v.toLocaleString('en-US', { minimumFractionDigits:2, maximumFractionDigits:2 });
+}
+function formatTime(unix) {
+  if (!unix) return '';
+  const d = new Date(unix * 1000);
+  return d.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'}) +
+    ' · ' + d.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit',timeZoneName:'short'});
+}
+
+function onSearch() { searchQuery = document.getElementById('searchInput').value; recalculate(); }
+function onSort()   { sortMode = document.getElementById('sortSelect').value; recalculate(); }
+function recalculate() { renderMatches(cachedMatches); }
+
+// ── Market Matching ────────────────────────────────────────────────────────
+function matchMarkets(sxMkts, sxOdds, polyMkts, league) {
+  const sxByKey = {};
+  for (const m of sxMkts) {
+    const t1 = normalizeTeam(m.teamOneName || m.outcomeOneName || '', league);
+    const t2 = normalizeTeam(m.teamTwoName || m.outcomeTwoName || '', league);
+    if (!t1 || !t2) continue;
+    const key = makeMatchKey(t1, t2);
+    sxByKey[key] = {
+      teamOne: m.teamOneName || m.outcomeOneName,
+      teamTwo: m.teamTwoName || m.outcomeTwoName,
+      t1n: t1, t2n: t2,
+      gameTime: m.gameTime,
+      odds: sxOdds[m.marketHash] || null,
+    };
+  }
+  const matches = [];
+  for (const pm of polyMkts) {
+    const pt1 = normalizeTeam(pm.teamOne, league);
+    const pt2 = normalizeTeam(pm.teamTwo, league);
+    const key = makeMatchKey(pt1, pt2);
+    if (!sxByKey[key]) continue;
+    const sx = sxByKey[key];
+    let p1 = pm.priceOne, p2 = pm.priceTwo;
+    if (pt1 !== sx.t1n) [p1,p2] = [p2,p1];
+    matches.push({ teamOne:sx.teamOne, teamTwo:sx.teamTwo, gameTime:sx.gameTime, sx:sx.odds, poly:{outcomeOne:p1,outcomeTwo:p2} });
+    delete sxByKey[key];
+  }
+  for (const k of Object.keys(sxByKey)) {
+    const sx = sxByKey[k];
+    if (!sx.odds) continue;
+    matches.push({ teamOne:sx.teamOne, teamTwo:sx.teamTwo, gameTime:sx.gameTime, sx:sx.odds, poly:null });
+  }
+  matches.sort((a,b) => (a.gameTime||0) - (b.gameTime||0));
+  return matches;
+}
+
+// ── Render ─────────────────────────────────────────────────────────────────
+function renderMatches(matches) {
+  cachedMatches = matches;
+  const content  = document.getElementById('content');
+  const statsBar = document.getElementById('statsBar');
+  const bet      = parseFloat(document.getElementById('betAmount').value) || 1000;
+
+  const q = searchQuery.toLowerCase().trim();
+  let filtered = q
+    ? matches.filter(m => m.teamOne.toLowerCase().includes(q) || m.teamTwo.toLowerCase().includes(q))
+    : matches;
+
+  if (sortMode === 'best-payout') {
+    filtered = [...filtered].sort((a,b) => {
+      const maxAbs = m => {
+        const s1 = m.sx ? sxPayout(m.sx.outcomeOne, bet) : null;
+        const s2 = m.sx ? sxPayout(m.sx.outcomeTwo, bet) : null;
+        const p1 = m.poly ? polyPayout(m.poly.outcomeOne, bet) : null;
+        const p2 = m.poly ? polyPayout(m.poly.outcomeTwo, bet) : null;
+        return Math.max(s1&&p1?Math.abs(s1-p1):0, s2&&p2?Math.abs(s2-p2):0);
+      };
+      return maxAbs(b) - maxAbs(a);
+    });
+  } else if (sortMode === 'alpha') {
+    filtered = [...filtered].sort((a,b) => (a.teamOne+a.teamTwo).localeCompare(b.teamOne+b.teamTwo));
+  }
+
+  if (!filtered.length) {
+    const leagueLabel = LEAGUES[currentLeague].label;
+    const leagueEmoji = currentLeague === 'mlb' ? '⚾' : '🏀';
+    content.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">${leagueEmoji}</div>
+        <div class="empty-title">${q ? 'No teams found' : 'No markets available'}</div>
+        <div class="empty-desc">${q ? `No ${leagueLabel} games matching "${q}". Try a different search.` : `No matched ${leagueLabel} moneyline markets found. Try refreshing when both platforms have active games.`}</div>
+      </div>`;
+    statsBar.innerHTML = '';
+    return;
+  }
+
+  let sxWins = 0, polyWins = 0, maxEdge = 0;
+  let html = '';
+
+  for (let ci = 0; ci < filtered.length; ci++) {
+    const m = filtered[ci];
+    const has = m.poly !== null;
+    const cardDelay = (ci * 0.04).toFixed(2);
+
+    const sp1 = m.sx ? sxPayout(m.sx.outcomeOne, bet) : null;
+    const sp2 = m.sx ? sxPayout(m.sx.outcomeTwo, bet) : null;
+    const pp1 = has  ? polyPayout(m.poly.outcomeOne, bet) : null;
+    const pp2 = has  ? polyPayout(m.poly.outcomeTwo, bet) : null;
+    const pi1 = pp1 != null ? bet / pp1 : null;
+    const pi2 = pp2 != null ? bet / pp2 : null;
+    const d1  = (sp1!=null&&pp1!=null) ? sp1-pp1 : null;
+    const d2  = (sp2!=null&&pp2!=null) ? sp2-pp2 : null;
+    const b1  = (sp1!=null&&pp1!=null) ? (sp1>=pp1?'sx':'poly') : null;
+    const b2  = (sp2!=null&&pp2!=null) ? (sp2>=pp2?'sx':'poly') : null;
+
+    if (b1==='sx'  || b2==='sx')   sxWins++;
+    if (b1==='poly'|| b2==='poly') polyWins++;
+    if (d1!=null) maxEdge = Math.max(maxEdge, Math.abs(d1));
+    if (d2!=null) maxEdge = Math.max(maxEdge, Math.abs(d2));
+
+    function buildRow(teamName, sxI, polyI, sxP, polyP, diff, better, ri) {
+      const bd    = (ci*0.04 + ri*0.07).toFixed(2);
+      const sxPct = sxI   != null ? Math.min(100, sxI*100).toFixed(1)   : 0;
+      const ppct  = polyI != null ? Math.min(100, polyI*100).toFixed(1) : 0;
+      const sxOs  = sxI   != null ? formatOdds(sxI)   : '—';
+      const poOs  = polyI != null ? formatOdds(polyI)  : '—';
+
+      let pill = '';
+      if (!has) {
+        pill = `<div class="payout-pill na"><div class="payout-diff-val odds-na">—</div><div class="payout-platform-name">SX only</div></div>`;
+      } else if (diff == null) {
+        pill = `<div class="payout-pill neutral"><div class="payout-diff-val odds-na">—</div></div>`;
+      } else {
+        const zero = Math.abs(diff) < 0.005;
+        const cls  = zero ? 'neutral' : (diff > 0 ? 'positive' : 'negative');
+        const sign = diff > 0 ? '+' : '';
+        const arr  = zero ? '·' : (diff > 0 ? '↑' : '↓');
+        const plat = better === 'sx' ? 'SX Bet' : 'Polymarket';
+        const best = better === 'sx' ? sxP : polyP;
+        pill = `
+          <div class="payout-pill ${cls}">
+            <div class="payout-diff-val"><span>${arr}</span>${sign}${formatPayout(diff)}</div>
+            <div class="payout-platform-name">${zero ? 'Equal' : 'on ' + plat}</div>
+          </div>
+          <div class="payout-amounts">${formatPayout(best)}</div>`;
+      }
+
+      return `
+        <div class="outcome-row">
+          <div class="outcome-label">
+            <div class="outcome-name">${teamName} Win</div>
+          </div>
+          <div class="platform-bar-group">
+            <div class="platform-tag sx-tag">SX Bet</div>
+            <div class="odds-value sx-odds">${sxOs}</div>
+          </div>
+          <div class="platform-bar-group">
+            ${has ? `
+              <div class="platform-tag poly-tag">Polymarket</div>
+              <div class="odds-value poly-odds">${poOs}</div>` : `<div class="no-poly-note">No Polymarket data</div>`}
+          </div>
+          <div class="best-payout-col">${pill}</div>
+        </div>`;
+    }
+
+    html += `
+      <div class="game-card" style="animation-delay:${cardDelay}s">
+        <div class="card-header">
+          <h2 class="matchup-title">
+            ${m.teamOne} <span class="matchup-vs">vs</span> ${m.teamTwo}
+          </h2>
+          <div class="game-time-badge">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            ${formatTime(m.gameTime)}
+          </div>
+        </div>
+        ${buildRow(m.teamOne, m.sx?.outcomeOne, pi1, sp1, pp1, d1, b1, 0)}
+        ${buildRow(m.teamTwo, m.sx?.outcomeTwo, pi2, sp2, pp2, d2, b2, 1)}
+      </div>`;
+  }
+
+  content.innerHTML = html;
+
+  statsBar.innerHTML = `
+    <div class="stat-chip" style="animation-delay:0s">
+      <div class="stat-dot" style="background:var(--sx)"></div>
+      <span><strong>${filtered.length}</strong> game${filtered.length===1?'':'s'}</span>
+    </div>
+    ${sxWins ? `<div class="stat-chip" style="animation-delay:.05s">
+      <div class="stat-dot" style="background:var(--sx)"></div>
+      <span>SX better in <strong>${sxWins}</strong></span>
+    </div>` : ''}
+    ${polyWins ? `<div class="stat-chip" style="animation-delay:.1s">
+      <div class="stat-dot" style="background:var(--poly)"></div>
+      <span>Poly better in <strong>${polyWins}</strong></span>
+    </div>` : ''}
+    ${maxEdge > 0 ? `<div class="stat-chip" style="animation-delay:.15s">
+      <div class="stat-dot" style="background:var(--win)"></div>
+      <span>Max edge: <strong>${formatPayout(maxEdge)}</strong></span>
+    </div>` : ''}`;
+}
+
+// ── Load ───────────────────────────────────────────────────────────────────
+async function loadData() {
+  const btn  = document.getElementById('refreshBtn');
+  const icon = document.getElementById('refreshIcon');
+  const content = document.getElementById('content');
+
+  btn.disabled = true;
+  icon.style.animation = 'spin 0.7s linear infinite';
+
+  content.innerHTML = `
+    <div class="loading-state">
+      <div class="loader">
+        <div class="loader-dot"></div><div class="loader-dot"></div><div class="loader-dot"></div>
+      </div>
+      <div class="loading-text">Fetching live odds…</div>
+      <div class="loading-sub">Connecting to SX Bet &amp; Polymarket</div>
+    </div>`;
+  document.getElementById('statsBar').innerHTML = '';
+
+  const league = LEAGUES[currentLeague];
+  let sxMkts = [], sxOdds = {}, polyMkts = [];
+
+  const [sxRes, polyRes] = await Promise.allSettled([
+    (async () => {
+      sxMkts = await fetchSXMarkets(league.sxLeagueId);
+      const hs = sxMkts.map(m => m.marketHash).filter(Boolean);
+      if (hs.length) sxOdds = await fetchSXOdds(hs);
+    })(),
+    (async () => { polyMkts = await fetchPolyMarkets(league.polyTagSlug); })(),
+  ]);
+
+  let errHtml = '';
+  if (sxRes.status   === 'rejected') errHtml += `<div class="error-card">⚠ SX Bet: ${sxRes.reason?.message||'Unknown error'}</div>`;
+  if (polyRes.status === 'rejected') errHtml += `<div class="error-card">⚠ Polymarket: ${polyRes.reason?.message||'Unknown error'}</div>`;
+
+  content.innerHTML = errHtml;
+  renderMatches(matchMarkets(sxMkts, sxOdds, polyMkts, currentLeague));
+  if (errHtml) content.innerHTML = errHtml + content.innerHTML;
+
+  document.getElementById('lastUpdated').textContent =
+    'Updated ' + new Date().toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
+  btn.disabled = false;
+  icon.style.animation = '';
+}
+
+loadData();
+</script>
+</body>
+</html>
