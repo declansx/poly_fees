@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "skills": {
+    "sxbet": {
+      "source": "docs.sx.bet",
+      "sourceType": "well-known",
+      "computedHash": "e597ad71e567fe8a0a17d63162a6d1d893c39bb057095ade1594f0bbdccac00f"
+    }
+  }
+}
