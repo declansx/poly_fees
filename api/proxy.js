@@ -21,7 +21,8 @@ module.exports = async (req, res) => {
       headers: { 'Accept': 'application/json' },
     });
     const data = await resp.text();
-    res.status(resp.status).set('Content-Type', 'application/json').send(data);
+    res.setHeader('Content-Type', 'application/json');
+    res.status(resp.status).send(data);
   } catch (err) {
     res.status(502).json({ error: err.message });
   }
